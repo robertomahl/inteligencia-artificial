@@ -1,5 +1,5 @@
 /**
- * Exercício 1
+ * Exercício 1 - Missionarios e Canibais
  */
 import java.util.*;
 

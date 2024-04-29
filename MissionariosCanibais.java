@@ -1,3 +1,6 @@
+/**
+ * Exercício 1
+ */
 import java.util.*;
 
 public class MissionariosCanibais {
@@ -98,18 +101,18 @@ public class MissionariosCanibais {
         List<Estado> proximosEstados = new ArrayList<>();
 
         if (estado.barcoNaEsquerda) {
-            proximosEstados.add(new Estado(estado.missE - 1, estado.missD + 1, estado.canE, estado.canD, false));
             proximosEstados.add(new Estado(estado.missE - 2, estado.missD + 2, estado.canE, estado.canD, false));
-            proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE - 1, estado.canD + 1, false));
-            proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE - 2, estado.canD + 2, false));
+            proximosEstados.add(new Estado(estado.missE - 1, estado.missD + 1, estado.canE, estado.canD, false));
             proximosEstados
                     .add(new Estado(estado.missE - 1, estado.missD + 1, estado.canE - 1, estado.canD + 1, false));
+            proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE - 1, estado.canD + 1, false));
+            proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE - 2, estado.canD + 2, false));
         } else {
-            proximosEstados.add(new Estado(estado.missE + 1, estado.missD - 1, estado.canE, estado.canD, true));
             proximosEstados.add(new Estado(estado.missE + 2, estado.missD - 2, estado.canE, estado.canD, true));
+            proximosEstados.add(new Estado(estado.missE + 1, estado.missD - 1, estado.canE, estado.canD, true));
+            proximosEstados.add(new Estado(estado.missE + 1, estado.missD - 1, estado.canE + 1, estado.canD - 1, true));
             proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE + 1, estado.canD - 1, true));
             proximosEstados.add(new Estado(estado.missE, estado.missD, estado.canE + 2, estado.canD - 2, true));
-            proximosEstados.add(new Estado(estado.missE + 1, estado.missD - 1, estado.canE + 1, estado.canD - 1, true));
         }
 
         proximosEstados.removeIf(visitados::contains);

@@ -1,10 +1,13 @@
+/**
+ * Exercício 4
+ */
 import java.util.*;
 
 public class Voos1 {
 
-    static ArrayList<Estado> possiveisEstados = new ArrayList<>();
-    public static final String CIDADE_INICIAL = "a";
-    public static final String CIDADE_FINAL = "j";
+    static final String CIDADE_INICIAL = "a";
+    static final String CIDADE_FINAL = "j";
+    static List<Estado> possiveisEstados = new ArrayList<>();
     static List<String> visitados = new ArrayList<>();
     static List<Estado> naoVisitados = new ArrayList<>();
 

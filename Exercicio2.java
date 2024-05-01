@@ -34,6 +34,11 @@ public class Exercicio2 {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(jarro3, jarro4);
+        }
+
+        @Override
         public String toString() {
             return "Jarro 3: " + jarro3 + " | Jarro 4: " + jarro4;
         }
@@ -54,6 +59,8 @@ public class Exercicio2 {
             List<Estado> caminho = fronteira.poll();
             Estado estadoAtual = caminho.get(caminho.size() - 1);
             visitados.add(estadoAtual);
+
+            System.out.println(estadoAtual);
 
             if (estadoAtual.eObjetivo()) {
                 resultado.add(caminho);

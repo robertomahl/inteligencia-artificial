@@ -1,193 +1,168 @@
 /**
- * Exercício 6 - Rotas - TODO
+ * Exercício 6 - Rotas
  */
 import java.util.*;
 
-public class Rotas {
+public class Exercicio6 {
 
-	static final String CIDADE_INICIAL = "a";
-	static final String CIDADE_FINAL = "k";
-	static List<Estado> possiveisEstados = new ArrayList<>();
-	static List<String> visitados = new ArrayList<>();
-	static List<Estado> naoVisitados = new ArrayList<>();
+	public static final String CIDADE_INICIAL = "a";
+	public static final String CIDADE_FINAL = "k";
 
-	static String cidadeAtual = null;
+	public static List<Estado> possiveisEstados = new ArrayList<>();
+	public static List<String> visitados = new ArrayList<>();
+	public static List<Estado> naoVisitados = new ArrayList<>();
+
 	static int nrEstado = 0;
 
-	static class Estado {
-		int heuristica;
+	static class No {
 		String cidade;
-		Estado pai;
+		int heuristica;
 
-		Estado(String cidade, int heuristica) {
-			this.heuristica = heuristica;
+		public No(String cidade, int heuristica) {
 			this.cidade = cidade;
+			this.heuristica = heuristica;
 		}
 
-		void imprime() {			
-			System.out.println("h(" + cidade + ") = " + heuristica);
-		}
-
-		void addPai(Estado pai) {
-			this.pai = pai;
+		@Override
+		public String toString() {
+			return cidade + " (" + heuristica + ")";
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj instanceof Estado) {
-				Estado other = (Estado) obj;
-                return this.heuristica == other.heuristica && this.cidade.equals(other.cidade);
+			if (obj instanceof No) {
+				No other = (No) obj;
+				return this.cidade.equals(other.cidade);
 			}
 			return false;
 		}
 	}
 
-	// static void abreNo(String no, Estado estadoOrigem) {
-	// 	for (Estado estado : possiveisEstados) {
-	// 		if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
-	// 			estado.addPai(estadoOrigem);
-	// 			naoVisitados.add(estado);
-	// 		}
-	// 		if (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)) {
-	// 			estado.addPai(estadoOrigem);
-	// 			naoVisitados.add(estado);
-	// 		}
-	// 	}
-	// 	visitados.add(no);
-	// }
+	static class Estado {
+		No cidade1;
+		No cidade2;
+		Estado pai;
 
-	// static void abreNoGuloso(String no, Estado estadoOrigem) {
-	// 	Estado menorCusto = null;
-	// 	for (Estado estado : possiveisEstados) {
-	// 		if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
-	// 			if (menorCusto == null || estado.heuristica < menorCusto.heuristica) {
-	// 				menorCusto = estado;
-	// 			}
-	// 		}
-	// 		if (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)) {
-	// 			if (menorCusto == null || estado.heuristica < menorCusto.heuristica) {
-	// 				menorCusto = estado;
-	// 			}
-	// 		}
-	// 	}
-	// 	if (menorCusto != null) {
-	// 		menorCusto.addPai(estadoOrigem);
-	// 		naoVisitados.add(menorCusto);
-	// 	}
-	// 	visitados.add(no);
-	// }
+		public Estado(No cidade1, No cidade2) {
+			this.cidade1 = cidade1;
+			this.cidade2 = cidade2;
+		}
 
-	// static String getCidadeJaVisitada(Estado estado) {
-	// 	return visitados.contains(estado.cidade1) ? estado.cidade1 : estado.cidade2;
-	// }
+		public void setPai(Estado pai) {
+			this.pai = pai;
+		}
 
-	// static String getCidadeNaoVisitada(Estado estado) {
-	// 	return visitados.contains(estado.cidade1) ? estado.cidade2 : estado.cidade1;
-	// }
-
-	// static void concluirBusca(Estado ultimoNo) {
-	// 	System.out.println("Cidade final encontrada. Percurso: ");
-	// 	boolean fim = false;
-	// 	while (!fim) {
-	// 		ultimoNo.imprime();
-	// 		if (ultimoNo.pai == null) {
-	// 			fim = true;
-	// 		}
-	// 		ultimoNo = ultimoNo.pai;
-	// 	}
-	// }
- 
-	// static void buscarSolucaoProfundidade(String cidade) {
-	// 	cidadeAtual = cidade;
-	// 	String destino = null;
-
-	// 	abreNo(cidade, null);
-	// 	while (!naoVisitados.isEmpty()) {
-	// 		Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
-	// 		cidadeAtual = getCidadeJaVisitada(novoNo);
-	// 		destino = getCidadeNaoVisitada(novoNo);
-	// 		if (destino != null && !visitados.contains(destino)) {
-	// 			nrEstado++;
-	// 			novoNo.imprime();
-	// 			abreNo(destino, novoNo);
-	// 			if (destino.equals(CIDADE_FINAL)) {
-	// 				concluirBusca(novoNo);
-	// 				return;
-	// 			}
-	// 		}
-	// 	}
-	// 	System.out.println("Cidade final não encontrada");
-	// }
-
-	// static void buscarSolucaoLargura(String cidade) {
-	// 	cidadeAtual = cidade;
-	// 	String destino = null;
-
-	// 	abreNo(cidade, null);
-	// 	while (!naoVisitados.isEmpty()) {
-	// 		Estado novoNo = naoVisitados.remove(0);
-	// 		cidadeAtual = getCidadeJaVisitada(novoNo);
-	// 		destino = getCidadeNaoVisitada(novoNo);
-	// 		if (destino != null && !visitados.contains(destino)) {
-	// 			nrEstado++;
-	// 			novoNo.imprime();
-	// 			abreNo(destino, novoNo);
-	// 			if (destino.equals(CIDADE_FINAL)) {
-	// 				concluirBusca(novoNo);
-	// 				return;
-	// 			}
-	// 		}
-	// 	}
-	// 	System.out.println("Cidade final não encontrada");
-	// }
-
-	// static void buscarSolucaoGulosa(String cidade) {
-	// 	cidadeAtual = cidade;
-	// 	String destino = null;
+		@Override
+		public String toString() {
+			return "rota(" + cidade1 + ", " + cidade2 + ")";
+		} 
 		
-	// 	abreNoGuloso(cidade, null);
-	// 	while (naoVisitados.size() == 1) {
-	// 		Estado novoNo = naoVisitados.remove(0);
-	// 		cidadeAtual = getCidadeJaVisitada(novoNo);
-	// 		destino = getCidadeNaoVisitada(novoNo);
-	// 		if (destino != null && !visitados.contains(destino)) {
-	// 			nrEstado++;
-	// 			novoNo.imprime();
-	// 			abreNoGuloso(destino, novoNo);
-				
-	// 			if (destino.equals(CIDADE_FINAL)) {
-	// 				concluirBusca(novoNo);
-	// 				return;
-	// 			}
-	// 		}
-	// 	}
-	// 	System.out.println("Cidade final não encontrada");
-	// }
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Estado) {
+				Estado other = (Estado) obj;
+				return this.cidade1.equals(other.cidade1) && this.cidade2.equals(other.cidade2);
+			}
+			return false;
+		}
+	}
 
-	// static void reinicializarVariaveis() {
-	// 	for (Estado estado : possiveisEstados) {
-	// 		estado.pai = null;
-	// 	}
-	// 	visitados.clear();
-	// 	naoVisitados.clear();
-	// 	nrEstado = 0;
-	// 	cidadeAtual = null;
-	// }
+	private static void abrirNoGuloso(String no, Estado estadoOrigem) {
+		List<Estado> filhosCidade2 = new ArrayList<>();
+		List<Estado> filhosCidade1 = new ArrayList<>();
+		for (Estado estado : possiveisEstados) {
+			if (estado.cidade1.cidade.equals(no) && !visitados.contains(estado.cidade2.cidade)) {
+                estado.setPai(estadoOrigem);
+				filhosCidade2.add(estado);
+			} else if (estado.cidade2.cidade.equals(no) && !visitados.contains(estado.cidade1.cidade)) {
+                estado.setPai(estadoOrigem);
+				filhosCidade1.add(estado);
+			}
+		}
+		filhosCidade2.sort((a, b) -> b.cidade2.heuristica - a.cidade2.heuristica);
+		filhosCidade1.sort((a, b) -> b.cidade1.heuristica - a.cidade1.heuristica);
+
+		List<Estado> filhos = new ArrayList<>();
+		if (filhosCidade1.isEmpty() || filhosCidade2.isEmpty()) {
+			filhos.addAll(filhosCidade1);
+			filhos.addAll(filhosCidade2);
+		} else {
+			int i = 0, j = 0;
+			while (i < filhosCidade1.size() && j < filhosCidade2.size()) {
+				if (filhosCidade1.get(i).cidade1.heuristica > filhosCidade2.get(j).cidade2.heuristica) {
+					filhos.add(filhosCidade1.get(i++));
+				} else {
+					filhos.add(filhosCidade2.get(j++));
+				}
+			}
+		}
+
+		naoVisitados.addAll(filhos);
+		visitados.add(no);
+	}
+
+	private static String getCidadeNaoVisitada(Estado estado) {
+		return !visitados.contains(estado.cidade1.cidade) ? estado.cidade1.cidade : !visitados.contains(estado.cidade2.cidade) ? estado.cidade2.cidade : null;
+	}
+
+	private static void concluirBusca(Estado ultimoNo) {
+		System.out.println("Cidade final encontrada. Percurso: ");
+		imprimirRecursivamente(ultimoNo);
+	}
+
+    private static void imprimirRecursivamente(Estado estado) {
+        if (estado.pai != null) {
+            imprimirRecursivamente(estado.pai);
+        }
+        System.out.println(estado);
+    }
+
+	public static void buscarSolucaoGulosa(String cidade) {		
+		abrirNoGuloso(cidade, null);
+		while (!naoVisitados.isEmpty()) {
+			Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
+			String destino = getCidadeNaoVisitada(novoNo);
+			
+			if (destino != null) {
+			    System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
+				
+				abrirNoGuloso(destino, novoNo);
+				if (destino.equals(CIDADE_FINAL)) {
+					concluirBusca(novoNo);
+					return;
+				}
+			}
+		}
+		System.out.println("Cidade final não encontrada");
+	}
+
 
 	public static void main(String[] args) {
-// h(a) = 15, h(b) = 7, h(c) = 6, h(d) = 14, h(e) = 15, h(f) = 7, h(g) = 8, h(h) = 5, h(i) = 5, h(j) = 3, h(k) = 0, h(l) = 4
-
-		possiveisEstados.add(new Estado(1, "a", "
-
-		System.out.println("\nBusca em profundidade: ");
-		buscarSolucaoProfundidade(CIDADE_INICIAL);
-
-		reinicializarVariaveis();
-
-		System.out.println("\nBusca em largura: ");
-		buscarSolucaoLargura(CIDADE_INICIAL);
-
-		reinicializarVariaveis();
+		No a = new No("a", 15);
+		No b = new No("b", 7);
+		No c = new No("c", 6);
+		No d = new No("d", 14);
+		No e = new No("e", 15);
+		No f = new No("f", 7);
+		No g = new No("g", 8);
+		No h = new No("h", 5);
+		No i = new No("i", 5);
+		No j = new No("j", 3);
+		No k = new No("k", 0);
+		No l = new No("l", 4);
+		
+		possiveisEstados.add(new Estado(a, b));
+		possiveisEstados.add(new Estado(a, c));
+		possiveisEstados.add(new Estado(a, d));
+		possiveisEstados.add(new Estado(b, f));
+		possiveisEstados.add(new Estado(b, i));
+		possiveisEstados.add(new Estado(c, j));
+		possiveisEstados.add(new Estado(d, e));
+		possiveisEstados.add(new Estado(i, k));
+		possiveisEstados.add(new Estado(f, g));
+		possiveisEstados.add(new Estado(g, h));
+		possiveisEstados.add(new Estado(j, l));
+		possiveisEstados.add(new Estado(l, k));
 
 		System.out.println("\nBusca gulosa: ");
 		buscarSolucaoGulosa(CIDADE_INICIAL);

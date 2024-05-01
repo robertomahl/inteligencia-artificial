@@ -5,12 +5,12 @@ import java.util.*;
 
 public class Exercicio5 {
 
-	static final String CIDADE_INICIAL = "a";
-	static final String CIDADE_FINAL = "h";
+	public static final String CIDADE_INICIAL = "a";
+	public static final String CIDADE_FINAL = "h";
 	
-	static List<Estado> possiveisEstados = new ArrayList<>();
-	static List<String> visitados = new ArrayList<>();
-	static List<Estado> naoVisitados = new ArrayList<>();
+	public static List<Estado> possiveisEstados = new ArrayList<>();
+	public static List<String> visitados = new ArrayList<>();
+	public static List<Estado> naoVisitados = new ArrayList<>();
 
 	static int nrEstado = 0;
 
@@ -26,7 +26,7 @@ public class Exercicio5 {
 			this.cidade2 = cidade2;
 		}
 
-		public void addPai(Estado pai) {
+		public void setPai(Estado pai) {
 			this.pai = pai;
 		}
 
@@ -47,13 +47,13 @@ public class Exercicio5 {
 	}
 
 	private static void abrirNo(String no, Estado estadoOrigem) {
-		for (Estado estado : possiveisEstados) {
+ 		for (Estado estado : possiveisEstados) {
 			if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
-				estado.addPai(estadoOrigem);
+				estado.setPai(estadoOrigem);
 				naoVisitados.add(estado);
 			}
 			if (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)) {
-				estado.addPai(estadoOrigem);
+				estado.setPai(estadoOrigem);
 				naoVisitados.add(estado);
 			}
 		}
@@ -61,19 +61,36 @@ public class Exercicio5 {
 	}
 	
 	private static void abrirNoGuloso(String no, Estado estadoOrigem) {
-		int menorCusto = possiveisEstados.stream()
-			.filter(estado -> (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) || (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)))
-			.map(estado -> estado.voo)
-			.min(Integer::compare)
-			.orElse(-1);
-
+		List<Estado> filhosCidade2 = new ArrayList<>();
+		List<Estado> filhosCidade1 = new ArrayList<>();
 		for (Estado estado : possiveisEstados) {
-			if (estado.voo == menorCusto && ((estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) || (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)))) {
-				estado.addPai(estadoOrigem);
-				naoVisitados.add(estado);
+			if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
+                estado.setPai(estadoOrigem);
+				filhosCidade2.add(estado);
+			} else if (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)) {
+                estado.setPai(estadoOrigem);
+				filhosCidade1.add(estado);
 			}
 		}
-		
+		filhosCidade2.sort((a, b) -> b.voo - a.voo);
+		filhosCidade1.sort((a, b) -> b.voo - a.voo);
+
+		List<Estado> filhos = new ArrayList<>();
+		if (filhosCidade1.isEmpty() || filhosCidade2.isEmpty()) {
+			filhos.addAll(filhosCidade1);
+			filhos.addAll(filhosCidade2);
+		} else {
+			int i = 0, j = 0;
+			while (i < filhosCidade1.size() && j < filhosCidade2.size()) {
+				if (filhosCidade1.get(i).voo > filhosCidade2.get(j).voo) {
+					filhos.add(filhosCidade1.get(i++));
+				} else {
+					filhos.add(filhosCidade2.get(j++));
+				}
+			}
+		}
+
+		naoVisitados.addAll(filhos);
 		visitados.add(no);
 	}
 
@@ -140,7 +157,7 @@ public class Exercicio5 {
 		
 		abrirNoGuloso(cidade, null);
 		while (!naoVisitados.isEmpty()) {
-			Estado novoNo = naoVisitados.remove(0);
+			Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
 			String destino = getCidadeNaoVisitada(novoNo);
 			
 			if (destino != null) {

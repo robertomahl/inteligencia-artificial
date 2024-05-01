@@ -69,6 +69,8 @@ public class Exercicio4 {
     }
 
     public static void buscarSolucaoProfundidade(String cidade) {
+        reinicializarVariaveis();
+
         abrirNo(cidade, null);
         while (!naoVisitados.isEmpty()) {
             Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
@@ -85,6 +87,8 @@ public class Exercicio4 {
     }
 
     public static void buscarSolucaoLargura(String cidade) {
+        reinicializarVariaveis();
+
         abrirNo(cidade, null);
         while (!naoVisitados.isEmpty()) {
             Estado novoNo = naoVisitados.remove(0);
@@ -99,6 +103,15 @@ public class Exercicio4 {
             }
         }
     }
+
+    private static void reinicializarVariaveis() {
+		for (Estado estado : possiveisEstados) {
+			estado.pai = null;
+		}
+		visitados.clear();
+		naoVisitados.clear();
+		nrEstado = 0;
+	}
 
     public static void main(String[] args) {
         possiveisEstados.add(new Estado(1, "a", "b"));
@@ -123,10 +136,6 @@ public class Exercicio4 {
 
         System.out.println("\nBusca em profundidade:");
         buscarSolucaoProfundidade(CIDADE_INICIAL);
-
-        nrEstado = 0;
-        visitados.clear();
-        naoVisitados.clear();
 
         System.out.println("\nBusca em largura:");
         buscarSolucaoLargura(CIDADE_INICIAL);

@@ -74,17 +74,23 @@ public class Exercicio7 {
 		for (Estado estado : possiveisEstados) {
 			if (estado.cidade1.cidade.equals(no) && !visitados.contains(estado.cidade2.cidade)) {
                 estado.setPai(estadoOrigem);
+                estado.custo = estado.custo + (estadoOrigem != null ? estadoOrigem.custo : 0);
 				filhos.add(estado);
 			} else if (estado.cidade2.cidade.equals(no) && !visitados.contains(estado.cidade1.cidade)) {
                 estado.setPai(estadoOrigem);
+                estado.custo = estado.custo + (estadoOrigem != null ? estadoOrigem.custo : 0);
 				filhos.add(estado);
 			}
 		}
-        
-        filhos.sort(Comparator.comparingInt((Estado a) -> (a.custo + getNoNaoVisitado(a).heuristica)).reversed());
+        visitados.add(no);
+		
+        naoVisitados.addAll(filhos);
 
-		naoVisitados.addAll(filhos);
-		visitados.add(no);
+        Collections.sort(naoVisitados, (a, b) -> {
+            int sumA = a.custo + getNoNaoVisitado(a).heuristica;
+            int sumB = b.custo + getNoNaoVisitado(b).heuristica;
+            return Integer.compare(sumB, sumA);
+        });
 	}
 
 	private static String getCidadeNaoVisitada(Estado estado) {

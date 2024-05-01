@@ -1,9 +1,9 @@
 /**
- * Exercício 6 - Rotas
+ * Exercício 7 - A*
  */
 import java.util.*;
 
-public class Exercicio6 {
+public class Exercicio7 {
 
 	public static final String CIDADE_INICIAL = "a";
 	public static final String CIDADE_FINAL = "k";
@@ -42,10 +42,12 @@ public class Exercicio6 {
 		No cidade1;
 		No cidade2;
 		Estado pai;
+        int custo;
 
-		public Estado(No cidade1, No cidade2) {
+		public Estado(No cidade1, No cidade2, int custo) {
 			this.cidade1 = cidade1;
 			this.cidade2 = cidade2;
+            this.custo = custo;
 		}
 
 		public void setPai(Estado pai) {
@@ -54,7 +56,7 @@ public class Exercicio6 {
 
 		@Override
 		public String toString() {
-			return "rota(" + cidade1 + ", " + cidade2 + ")";
+			return "rota(" + cidade1 + ", " + cidade2 + ", custo = " + custo + ")";
 		} 
 		
 		@Override
@@ -68,41 +70,29 @@ public class Exercicio6 {
 	}
 
 	private static void abrirNoGuloso(String no, Estado estadoOrigem) {
-		List<Estado> filhosCidade2 = new ArrayList<>();
-		List<Estado> filhosCidade1 = new ArrayList<>();
+		List<Estado> filhos = new ArrayList<>();
 		for (Estado estado : possiveisEstados) {
 			if (estado.cidade1.cidade.equals(no) && !visitados.contains(estado.cidade2.cidade)) {
                 estado.setPai(estadoOrigem);
-				filhosCidade2.add(estado);
+				filhos.add(estado);
 			} else if (estado.cidade2.cidade.equals(no) && !visitados.contains(estado.cidade1.cidade)) {
                 estado.setPai(estadoOrigem);
-				filhosCidade1.add(estado);
+				filhos.add(estado);
 			}
 		}
-		filhosCidade2.sort((a, b) -> b.cidade2.heuristica - a.cidade2.heuristica);
-		filhosCidade1.sort((a, b) -> b.cidade1.heuristica - a.cidade1.heuristica);
-
-		List<Estado> filhos = new ArrayList<>();
-		if (filhosCidade1.isEmpty() || filhosCidade2.isEmpty()) {
-			filhos.addAll(filhosCidade1);
-			filhos.addAll(filhosCidade2);
-		} else {
-			int i = 0, j = 0;
-			while (i < filhosCidade1.size() && j < filhosCidade2.size()) {
-				if (filhosCidade1.get(i).cidade1.heuristica > filhosCidade2.get(j).cidade2.heuristica) {
-					filhos.add(filhosCidade1.get(i++));
-				} else {
-					filhos.add(filhosCidade2.get(j++));
-				}
-			}
-		}
+        
+        filhos.sort(Comparator.comparingInt((Estado a) -> (a.custo + getNoNaoVisitado(a).heuristica)).reversed());
 
 		naoVisitados.addAll(filhos);
 		visitados.add(no);
 	}
 
 	private static String getCidadeNaoVisitada(Estado estado) {
-		return !visitados.contains(estado.cidade1.cidade) ? estado.cidade1.cidade : !visitados.contains(estado.cidade2.cidade) ? estado.cidade2.cidade : null;
+		return getNoNaoVisitado(estado)!=null ? getNoNaoVisitado(estado).cidade : null;
+	}
+
+	private static No getNoNaoVisitado(Estado estado) {
+		return !visitados.contains(estado.cidade1.cidade) ? estado.cidade1 : !visitados.contains(estado.cidade2.cidade) ? estado.cidade2 : null;
 	}
 
 	private static void concluirBusca(Estado ultimoNo) {
@@ -151,20 +141,20 @@ public class Exercicio6 {
 		No k = new No("k", 0);
 		No l = new No("l", 4);
 		
-		possiveisEstados.add(new Estado(a, b));
-		possiveisEstados.add(new Estado(a, c));
-		possiveisEstados.add(new Estado(a, d));
-		possiveisEstados.add(new Estado(b, f));
-		possiveisEstados.add(new Estado(b, i));
-		possiveisEstados.add(new Estado(c, j));
-		possiveisEstados.add(new Estado(d, e));
-		possiveisEstados.add(new Estado(i, k));
-		possiveisEstados.add(new Estado(f, g));
-		possiveisEstados.add(new Estado(g, h));
-		possiveisEstados.add(new Estado(j, l));
-		possiveisEstados.add(new Estado(l, k));
+		possiveisEstados.add(new Estado(a, b, 7));
+		possiveisEstados.add(new Estado(a, c, 9));
+		possiveisEstados.add(new Estado(a, d, 3));
+		possiveisEstados.add(new Estado(b, f, 3));
+		possiveisEstados.add(new Estado(b, i, 4));
+		possiveisEstados.add(new Estado(c, j, 5));
+		possiveisEstados.add(new Estado(d, e, 1));
+		possiveisEstados.add(new Estado(i, k, 5));
+		possiveisEstados.add(new Estado(f, g, 2));
+		possiveisEstados.add(new Estado(g, h, 3));
+		possiveisEstados.add(new Estado(j, l, 6));
+		possiveisEstados.add(new Estado(l, k, 4));
 
-		System.out.println("\nBusca gulosa: ");
+		System.out.println("\nBusca A*: ");
 		buscarSolucaoGulosa(CIDADE_INICIAL);
 	}
 

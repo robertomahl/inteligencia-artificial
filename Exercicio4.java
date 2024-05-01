@@ -84,6 +84,7 @@ public class Exercicio4 {
                 }
             }
         }
+		System.out.println("\nCidade final não encontrada.");
     }
 
     public static void buscarSolucaoLargura(String cidade) {
@@ -102,6 +103,7 @@ public class Exercicio4 {
                 }
             }
         }
+		System.out.println("\nCidade final não encontrada.");
     }
 
     private static void reinicializarVariaveis() {

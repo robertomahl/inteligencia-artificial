@@ -3,15 +3,15 @@
  */
 import java.util.*;
 
-public class Voos2 {
+public class Exercicio5 {
 
 	static final String CIDADE_INICIAL = "a";
 	static final String CIDADE_FINAL = "h";
+	
 	static List<Estado> possiveisEstados = new ArrayList<>();
 	static List<String> visitados = new ArrayList<>();
 	static List<Estado> naoVisitados = new ArrayList<>();
 
-	static String cidadeAtual = null;
 	static int nrEstado = 0;
 
 	static class Estado {
@@ -20,18 +20,19 @@ public class Voos2 {
 		String cidade2;
 		Estado pai;
 
-		Estado(int voo, String cidade1, String cidade2) {
+		public Estado(int voo, String cidade1, String cidade2) {
 			this.voo = voo;
 			this.cidade1 = cidade1;
 			this.cidade2 = cidade2;
 		}
 
-		void imprime() {			
-			System.out.println("voo(" + cidade1 + ", " + cidade2 + ", " + voo + ")");
+		public void addPai(Estado pai) {
+			this.pai = pai;
 		}
 
-		void addPai(Estado pai) {
-			this.pai = pai;
+		@Override
+		public String toString() {
+			return "voo(" + cidade1 + ", " + cidade2 + ", " + voo + ")";
 		}
 
 		@Override
@@ -45,7 +46,7 @@ public class Voos2 {
 		}
 	}
 
-	static void abreNo(String no, Estado estadoOrigem) {
+	private static void abrirNo(String no, Estado estadoOrigem) {
 		for (Estado estado : possiveisEstados) {
 			if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
 				estado.addPai(estadoOrigem);
@@ -58,61 +59,52 @@ public class Voos2 {
 		}
 		visitados.add(no);
 	}
+	
+	private static void abrirNoGuloso(String no, Estado estadoOrigem) {
+		int menorCusto = possiveisEstados.stream()
+			.filter(estado -> (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) || (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)))
+			.map(estado -> estado.voo)
+			.min(Integer::compare)
+			.orElse(-1);
 
-	static void abreNoGuloso(String no, Estado estadoOrigem) {
-		Estado menorCusto = null;
 		for (Estado estado : possiveisEstados) {
-			if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
-				if (menorCusto == null || estado.voo < menorCusto.voo) {
-					menorCusto = estado;
-				}
-			}
-			if (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)) {
-				if (menorCusto == null || estado.voo < menorCusto.voo) {
-					menorCusto = estado;
-				}
+			if (estado.voo == menorCusto && ((estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) || (estado.cidade2.equals(no) && !visitados.contains(estado.cidade1)))) {
+				estado.addPai(estadoOrigem);
+				naoVisitados.add(estado);
 			}
 		}
-		if (menorCusto != null) {
-			menorCusto.addPai(estadoOrigem);
-			naoVisitados.add(menorCusto);
-		}
+		
 		visitados.add(no);
 	}
 
-	static String getCidadeJaVisitada(Estado estado) {
-		return visitados.contains(estado.cidade1) ? estado.cidade1 : estado.cidade2;
+	private static String getCidadeNaoVisitada(Estado estado) {
+		return !visitados.contains(estado.cidade1) ? estado.cidade1 : !visitados.contains(estado.cidade2) ? estado.cidade2 : null;
 	}
 
-	static String getCidadeNaoVisitada(Estado estado) {
-		return visitados.contains(estado.cidade1) ? estado.cidade2 : estado.cidade1;
-	}
-
-	static void concluirBusca(Estado ultimoNo) {
+    private static void concluirBusca(Estado ultimoNo) {
 		System.out.println("Cidade final encontrada. Percurso: ");
-		boolean fim = false;
-		while (!fim) {
-			ultimoNo.imprime();
-			if (ultimoNo.pai == null) {
-				fim = true;
-			}
-			ultimoNo = ultimoNo.pai;
-		}
+		imprimirRecursivamente(ultimoNo);
 	}
- 
-	static void buscarSolucaoProfundidade(String cidade) {
-		cidadeAtual = cidade;
-		String destino = null;
 
-		abreNo(cidade, null);
+    private static void imprimirRecursivamente(Estado estado) {
+        if (estado.pai != null) {
+            imprimirRecursivamente(estado.pai);
+        }
+        System.out.println(estado);
+    }
+ 
+	public static void buscarSolucaoProfundidade(String cidade) {
+		reinicializarVariaveis();
+
+		abrirNo(cidade, null);
 		while (!naoVisitados.isEmpty()) {
 			Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
-			cidadeAtual = getCidadeJaVisitada(novoNo);
-			destino = getCidadeNaoVisitada(novoNo);
-			if (destino != null && !visitados.contains(destino)) {
-				nrEstado++;
-				novoNo.imprime();
-				abreNo(destino, novoNo);
+			String destino = getCidadeNaoVisitada(novoNo);
+			
+			if (destino != null) {
+			    System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
+				
+				abrirNo(destino, novoNo);
 				if (destino.equals(CIDADE_FINAL)) {
 					concluirBusca(novoNo);
 					return;
@@ -122,42 +114,18 @@ public class Voos2 {
 		System.out.println("Cidade final não encontrada");
 	}
 
-	static void buscarSolucaoLargura(String cidade) {
-		cidadeAtual = cidade;
-		String destino = null;
+	public static void buscarSolucaoLargura(String cidade) {
+		reinicializarVariaveis();
 
-		abreNo(cidade, null);
+		abrirNo(cidade, null);
 		while (!naoVisitados.isEmpty()) {
 			Estado novoNo = naoVisitados.remove(0);
-			cidadeAtual = getCidadeJaVisitada(novoNo);
-			destino = getCidadeNaoVisitada(novoNo);
-			if (destino != null && !visitados.contains(destino)) {
-				nrEstado++;
-				novoNo.imprime();
-				abreNo(destino, novoNo);
-				if (destino.equals(CIDADE_FINAL)) {
-					concluirBusca(novoNo);
-					return;
-				}
-			}
-		}
-		System.out.println("Cidade final não encontrada");
-	}
-
-	static void buscarSolucaoGulosa(String cidade) {
-		cidadeAtual = cidade;
-		String destino = null;
-		
-		abreNoGuloso(cidade, null);
-		while (naoVisitados.size() == 1) {
-			Estado novoNo = naoVisitados.remove(0);
-			cidadeAtual = getCidadeJaVisitada(novoNo);
-			destino = getCidadeNaoVisitada(novoNo);
-			if (destino != null && !visitados.contains(destino)) {
-				nrEstado++;
-				novoNo.imprime();
-				abreNoGuloso(destino, novoNo);
+			String destino = getCidadeNaoVisitada(novoNo);
+			
+			if (destino != null) {
+			    System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
 				
+				abrirNo(destino, novoNo);
 				if (destino.equals(CIDADE_FINAL)) {
 					concluirBusca(novoNo);
 					return;
@@ -167,14 +135,34 @@ public class Voos2 {
 		System.out.println("Cidade final não encontrada");
 	}
 
-	static void reinicializarVariaveis() {
+	public static void buscarSolucaoGulosa(String cidade) {
+		reinicializarVariaveis();
+		
+		abrirNoGuloso(cidade, null);
+		while (!naoVisitados.isEmpty()) {
+			Estado novoNo = naoVisitados.remove(0);
+			String destino = getCidadeNaoVisitada(novoNo);
+			
+			if (destino != null) {
+			    System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
+				
+				abrirNoGuloso(destino, novoNo);
+				if (destino.equals(CIDADE_FINAL)) {
+					concluirBusca(novoNo);
+					return;
+				}
+			}
+		}
+		System.out.println("Cidade final não encontrada");
+	}
+
+	private static void reinicializarVariaveis() {
 		for (Estado estado : possiveisEstados) {
 			estado.pai = null;
 		}
 		visitados.clear();
 		naoVisitados.clear();
 		nrEstado = 0;
-		cidadeAtual = null;
 	}
 
 	public static void main(String[] args) {
@@ -194,12 +182,8 @@ public class Voos2 {
 		System.out.println("\nBusca em profundidade: ");
 		buscarSolucaoProfundidade(CIDADE_INICIAL);
 
-		reinicializarVariaveis();
-
 		System.out.println("\nBusca em largura: ");
 		buscarSolucaoLargura(CIDADE_INICIAL);
-
-		reinicializarVariaveis();
 
 		System.out.println("\nBusca gulosa: ");
 		buscarSolucaoGulosa(CIDADE_INICIAL);

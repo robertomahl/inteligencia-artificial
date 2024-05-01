@@ -16,11 +16,11 @@ public class Exercicio2 {
             this.jarro4 = jarro4;
         }
 
-        boolean eValido() {
+        public boolean eValido() {
             return this.jarro3 >= 0 && this.jarro3 <= 3 && this.jarro4 >= 0 && this.jarro4 <= 4;
         }
 
-        boolean eObjetivo() {
+        public boolean eObjetivo() {
             return this.jarro4 == OBJETIVO;
         }
 
@@ -34,17 +34,12 @@ public class Exercicio2 {
         }
 
         @Override
-        public int hashCode() {
-            return Objects.hash(jarro3, jarro4);
-        }
-
-        @Override
         public String toString() {
             return "Jarro 3: " + jarro3 + " | Jarro 4: " + jarro4;
         }
     }
 
-    static Queue<List<Estado>> buscarSolucao() {
+    public static Queue<List<Estado>> buscarSolucao() {
         Set<Estado> visitados = new HashSet<>();
 
         Estado inicial = new Estado(0, 0);
@@ -76,7 +71,7 @@ public class Exercicio2 {
         return resultado;
     }
 
-    static List<Estado> gerarEstadosValidos(Estado estado, Set<Estado> visitados) {
+    private static List<Estado> gerarEstadosValidos(Estado estado, Set<Estado> visitados) {
         List<Estado> proximosEstados = new ArrayList<>();
 
         if (estado.jarro3 < 3)

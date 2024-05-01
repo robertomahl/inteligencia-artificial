@@ -3,7 +3,7 @@
  */
 import java.util.*;
 
-public class Exercicio6 {
+public class Rotas {
 
 	static final String CIDADE_INICIAL = "a";
 	static final String CIDADE_FINAL = "k";

@@ -3,34 +3,36 @@
  */
 import java.util.*;
 
-public class Voos1 {
+public class Exercicio4 {
 
-    static final String CIDADE_INICIAL = "a";
-    static final String CIDADE_FINAL = "j";
-    static List<Estado> possiveisEstados = new ArrayList<>();
-    static List<String> visitados = new ArrayList<>();
-    static List<Estado> naoVisitados = new ArrayList<>();
+    public static final String CIDADE_INICIAL = "a";
+    public static final String CIDADE_FINAL = "j";
+    
+    public static List<Estado> possiveisEstados = new ArrayList<>();
+    public static List<String> visitados = new ArrayList<>();
+    public static List<Estado> naoVisitados = new ArrayList<>();
 
-    static int nrEstado;
+	static int nrEstado = 0;
 
     static class Estado {
         int voo;
         String cidade1;
         String cidade2;
-        Estado pai;
+        Estado pai = null;
 
-        Estado(int voo, String cidade1, String cidade2) {
+        public Estado(int voo, String cidade1, String cidade2) {
             this.voo = voo;
             this.cidade1 = cidade1;
             this.cidade2 = cidade2;
         }
 
-        void imprime() {
-            System.out.println("Estado " + nrEstado + ": \toper(" + voo + ", " + cidade1 + ", " + cidade2 + ")");
+        public void setPai(Estado pai) {
+            this.pai = pai;
         }
 
-        void addPai(Estado pai) {
-            this.pai = pai;
+        @Override
+        public String toString() {
+            return "oper(" + voo + ", " + cidade1 + ", " + cidade2 + ")";
         }
 
         @Override
@@ -44,48 +46,54 @@ public class Voos1 {
         }
     }
 
-    static void abreNo(String no) {
+    private static void abrirNo(String no, Estado estadoOrigem) {
         for (Estado estado : possiveisEstados) {
             if (estado.cidade1.equals(no) && !visitados.contains(estado.cidade2)) {
-                estado.addPai(new Estado(-1, no, null));
+                estado.setPai(estadoOrigem);
                 naoVisitados.add(estado);
             }
         }
         visitados.add(no);
     }
 
-    static void buscarSolucaoProfundidade(String cidade) {
-        if (cidade.equals(CIDADE_FINAL)) {
-            return;
-        }
+    private static void concluirBusca(Estado ultimoNo) {
+		System.out.println("\nCidade final encontrada. Percurso: ");
+		imprimirRecursivamente(ultimoNo);
+	}
 
-        abreNo(cidade);
+    private static void imprimirRecursivamente(Estado estado) {
+        if (estado.pai != null) {
+            imprimirRecursivamente(estado.pai);
+        }
+        System.out.println(estado.toString());
+    }
+
+    public static void buscarSolucaoProfundidade(String cidade) {
+        abrirNo(cidade, null);
         while (!naoVisitados.isEmpty()) {
             Estado novoNo = naoVisitados.remove(naoVisitados.size() - 1);
+            
             if (!visitados.contains(novoNo.cidade2)) {
-                nrEstado++;
-                novoNo.imprime();
-                abreNo(novoNo.cidade2);
+                System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
+                abrirNo(novoNo.cidade2, novoNo);
                 if (novoNo.cidade2.equals(CIDADE_FINAL)) {
+                    concluirBusca(novoNo);
                     return;
                 }
             }
         }
     }
 
-    static void buscarSolucaoLargura(String cidade) {
-        if (cidade.equals(CIDADE_FINAL)) {
-            return;
-        }
-
-        abreNo(cidade);
+    public static void buscarSolucaoLargura(String cidade) {
+        abrirNo(cidade, null);
         while (!naoVisitados.isEmpty()) {
             Estado novoNo = naoVisitados.remove(0);
+            
             if (!visitados.contains(novoNo.cidade2)) {
-                nrEstado++;
-                novoNo.imprime();
-                abreNo(novoNo.cidade2);
+			    System.out.println("Estado " + nrEstado++ + ": " + novoNo.toString());
+                abrirNo(novoNo.cidade2, novoNo);
                 if (novoNo.cidade2.equals(CIDADE_FINAL)) {
+                    concluirBusca(novoNo);
                     return;
                 }
             }
@@ -113,14 +121,13 @@ public class Voos1 {
         possiveisEstados.add(new Estado(18, "o", "a"));
         possiveisEstados.add(new Estado(19, "n", "b"));
 
-        nrEstado = 0;
         System.out.println("\nBusca em profundidade:");
         buscarSolucaoProfundidade(CIDADE_INICIAL);
 
+        nrEstado = 0;
         visitados.clear();
         naoVisitados.clear();
 
-        nrEstado = 0;
         System.out.println("\nBusca em largura:");
         buscarSolucaoLargura(CIDADE_INICIAL);
     }

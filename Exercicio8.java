@@ -16,7 +16,8 @@ public class Exercicio8 {
 	static class Estado {
 		int[][] matriz;
 		Estado pai;
-        int distancia;
+        int distancia = -1;
+		int numeroAcoes = 0;
 
 		public Estado(int[][] matriz) {
 			this.matriz = matriz;
@@ -24,11 +25,6 @@ public class Exercicio8 {
 		
 		public void setPai(Estado pai) {
 			this.pai = pai;
-		}
-
-		public void imprime() {
-			System.out.println("Distância: " + distancia);
-			System.out.println(this.toString());	
 		}
 
 		public void calcularDistancia() {
@@ -42,7 +38,7 @@ public class Exercicio8 {
 					}
 				}
 			}
-		}	
+		}
 
 		public int[] encontrarPosicao(int numero) {
 			int[] posicao = new int[2];
@@ -117,11 +113,22 @@ public class Exercicio8 {
 		return estados;
 	}
 
-	private static void abrirNoGuloso(Estado expandido) {		
+	private static void abrirNo(Estado expandido) {		
 		visitados.add(expandido);
 		
 		List<Estado> estados = obterProximosEstados(expandido);
 
+		estados.removeIf(e -> visitados.contains(e) || naoVisitados.contains(e));
+
+		naoVisitados.addAll(estados);
+   }
+
+	private static void abrirNoGuloso(Estado expandido) {		
+		visitados.add(expandido);
+		
+		List<Estado> estados = obterProximosEstados(expandido);
+		
+		estados.removeIf(e -> visitados.contains(e) || naoVisitados.contains(e));
 		estados.forEach(Estado::calcularDistancia);
 		
 		naoVisitados.addAll(estados);
@@ -129,13 +136,23 @@ public class Exercicio8 {
 		Collections.sort(naoVisitados, Comparator.comparingInt((Estado e) -> e.distancia).reversed());
    }
 
-	private static void abrirNo(Estado expandido) {		
+   	private static void abrirNoAStar(Estado expandido) {		
 		visitados.add(expandido);
 		
 		List<Estado> estados = obterProximosEstados(expandido);
 
+		estados.removeIf(e -> visitados.contains(e) || naoVisitados.contains(e));
+		estados.forEach(Estado::calcularDistancia);
+		estados.forEach(e -> e.numeroAcoes = expandido.numeroAcoes + 1);
+
 		naoVisitados.addAll(estados);
-   }
+		
+		Collections.sort(naoVisitados, (a, b) -> {
+            int sumA = a.distancia + a.numeroAcoes;
+            int sumB = b.distancia + b.numeroAcoes;
+            return Integer.compare(sumB, sumA);
+        });
+	}
 
 	private static Estado criarEstadoTroca(Estado expandido, int linhaAtual, int colunaAtual, int linhaNova, int colunaNova) {
 		int[][] novaMatriz = new int[3][3];
@@ -168,14 +185,13 @@ public class Exercicio8 {
 		while (!naoVisitados.isEmpty()) {
 			Estado estado = naoVisitados.remove(naoVisitados.size() - 1);
 			
-			if (estado != null) {
-			    estado.imprime();
-				
-				abrirNoGuloso(estado);
-				if (estado.equals(estadoFinal)) {
-					concluirBusca(estado);
-					return;
-				}
+			System.out.println("Distância: " + estado.distancia);
+			System.out.println(estado);
+			
+			abrirNoGuloso(estado);
+			if (estado.equals(estadoFinal)) {
+				concluirBusca(estado);
+				return;
 			}
 		}
 		System.out.println("Solução não encontrada.");
@@ -188,18 +204,35 @@ public class Exercicio8 {
         while (!naoVisitados.isEmpty()) {
             Estado estado = naoVisitados.remove(0);
             
-            if (!visitados.contains(estado) && !naoVisitados.contains(estadoFinal)) {
-			    estado.imprime();
+			System.out.println(estado);
 
-                abrirNo(estado);
-                if (estado.equals(estadoFinal)) {
-                    concluirBusca(estado);
-                    return;
-                }
-            }
+			abrirNo(estado);
+			if (estado.equals(estadoFinal)) {
+				concluirBusca(estado);
+				return;
+			}
         }
 		System.out.println("Solução não encontrada.");
     }
+
+	public static void buscarSolucaoAStar(Estado estadoInicial) {		
+        reinicializarVariaveis();
+		
+		abrirNoAStar(estadoInicial);
+		while (!naoVisitados.isEmpty()) {
+			Estado estado = naoVisitados.remove(naoVisitados.size() - 1);
+			
+			System.out.println("Distância: " + estado.distancia + "\t Acoes: " + estado.numeroAcoes);
+			System.out.println(estado);
+
+			abrirNoAStar(estado);
+			if (estado.equals(estadoFinal)) {
+				concluirBusca(estado);
+				return;
+			}
+		}
+		System.out.println("Solução não encontrada.");
+	}
 
     private static void reinicializarVariaveis() {
 		visitados.clear();
@@ -214,12 +247,17 @@ public class Exercicio8 {
 		Estado estadoInicial1 = new Estado(matrizInicial1);
 		buscarSolucaoLargura(estadoInicial1);
 
-
 		System.out.println("\nHeurística: ");
-        
+
 		int[][] matrizInicial2 = {{1, 3, 4}, {8, 2, 5}, {7, 6, 0}};
 		Estado estadoInicial2 = new Estado(matrizInicial2);
 		buscarSolucaoGulosa(estadoInicial2);
+
+		System.out.println("\nA*: ");
+        
+		int[][] matrizInicial3 = {{1, 2, 3}, {0, 6, 4}, {8, 7, 5}};
+		Estado estadoInicial3 = new Estado(matrizInicial3);
+		buscarSolucaoAStar(estadoInicial3);
 	}
 
 }

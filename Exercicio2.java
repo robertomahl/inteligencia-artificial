@@ -64,6 +64,7 @@ public class Exercicio2 {
 
             if (estadoAtual.eObjetivo()) {
                 resultado.add(caminho);
+                System.out.println("");
                 continue;
             }
 

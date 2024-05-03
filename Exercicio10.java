@@ -5,7 +5,6 @@ import java.util.List;
 public class Exercicio10 {
 
     public static final int QUANT_PALITOS = 5;
-    public static final boolean DIREITA_PARA_ESQUERDA = false;
 
     static class Nodo {
         int valor;
@@ -17,42 +16,50 @@ public class Exercicio10 {
         }
     }
 
-    private static int max(Nodo nodo, int alpha, int beta, int profundidade) {
+    private static int max(Nodo nodo, int alpha, int beta, int profundidade, boolean inverter, boolean poda) {
         if (nodo.filhos.isEmpty()) {
+            System.out.println("Profundidade: " + profundidade + " Valor: " + nodo.valor);
             return nodo.valor;
         }
         int valor = Integer.MIN_VALUE;
-        if (DIREITA_PARA_ESQUERDA) {
+        if (inverter) {
             Collections.reverse(nodo.filhos);
         }
-        for (Nodo filho : nodo.filhos) {
-            valor = Math.max(valor, min(filho, alpha, beta, profundidade + 1));
+        for (int i = 0; i < nodo.filhos.size(); i++) {
+            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta, profundidade + 1, inverter, poda));
             alpha = Math.max(alpha, valor);
-            if (alpha >= beta) {
-                System.out.println("Poda alfa-beta ocorreu no max. Alpha = " + alpha + " Beta = " + beta + " Profundidade = " + profundidade);
-                break;
+            if (poda) {
+                if (alpha >= beta && i < nodo.filhos.size() - 1) {
+                    System.out.println("Poda alfa-beta ocorreu no max. Alpha = " + alpha + " Beta = " + beta + " Profundidade = " + profundidade);
+                    break;
+                }
             }
         }
+        System.out.println("Profundidade: " + profundidade + " Alpha: " + alpha);
         nodo.valor = valor;
         return valor;
     }
 
-    private static int min(Nodo nodo, int alpha, int beta, int profundidade) {
+    private static int min(Nodo nodo, int alpha, int beta, int profundidade, boolean inverter, boolean poda) {
         if (nodo.filhos.isEmpty()) {
+            System.out.println("Profundidade: " + profundidade + " Valor: " + nodo.valor);
             return nodo.valor;
         }
         int valor = Integer.MAX_VALUE;
-        if (DIREITA_PARA_ESQUERDA) {
+        if (inverter) {
             Collections.reverse(nodo.filhos);
         }
-        for (Nodo filho : nodo.filhos) {
-            valor = Math.min(valor, max(filho, alpha, beta, profundidade + 1));
+        for (int i = 0; i < nodo.filhos.size(); i++) {
+            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta, profundidade + 1, inverter, poda));
             beta = Math.min(beta, valor);
-            if (alpha >= beta) {
-                System.out.println("Poda alfa-beta ocorreu no min. Alpha = " + alpha + " Beta = " + beta + " Profundidade = " + profundidade);
-                break;
+            if (poda) {
+                if (alpha >= beta && i < nodo.filhos.size() - 1) {
+                    System.out.println("Poda alfa-beta ocorreu no min. Alpha = " + alpha + " Beta = " + beta + " Profundidade = " + profundidade);
+                    break;
+                }
             }
         }
+        System.out.println("Profundidade: " + profundidade + " Beta: " + beta);
         nodo.valor = valor;
         return valor;
     }
@@ -86,8 +93,22 @@ public class Exercicio10 {
         System.out.println("Árvore de busca:");
         desenharArvore(raiz, "");
 
-        int resultado = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
-        System.out.println("Resultado: " + resultado);
-        desenharArvore(raiz, "");
+        raiz = criarArvore(QUANT_PALITOS, true);
+
+        System.out.println("\nMin-max sem poda:");
+        int resultado0 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false, false);
+        System.out.println("Resultado: " + resultado0);
+        
+        raiz = criarArvore(QUANT_PALITOS, true);
+
+        System.out.println("\nMin-max com poda alfa-beta da esquerda para direita:");
+        int resultado1 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false, true);
+        System.out.println("Resultado: " + resultado1);
+
+        raiz = criarArvore(QUANT_PALITOS, true);
+
+        System.out.println("\nMin-max com poda alfa-beta da direita para esquerda:");
+        int resultado2 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, true, true);
+        System.out.println("Resultado: " + resultado2);
     }
 }

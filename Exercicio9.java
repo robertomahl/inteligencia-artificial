@@ -4,8 +4,6 @@ import java.util.List;
 
 public class Exercicio9 {
 
-    public static final boolean DIREITA_PARA_ESQUERDA = false;
-
     static class Nodo {
         int valor;
         List<Nodo> filhos;
@@ -16,60 +14,61 @@ public class Exercicio9 {
         }
     }
 
-    private static int max(Nodo nodo, int alpha, int beta) {
+    private static int max(Nodo nodo, int alpha, int beta, int profundidade, boolean inverter, boolean poda) {
         if (nodo.filhos.isEmpty()) {
+            System.out.println("Profundidade: " + profundidade + " Valor: " + nodo.valor);
             return nodo.valor;
         }
+
         int valor = Integer.MIN_VALUE;
-        if (DIREITA_PARA_ESQUERDA) {
+        if (inverter) {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta));
+            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta, profundidade, inverter, poda));
             alpha = Math.max(alpha, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito
-            if (alpha >= beta && i < nodo.filhos.size() - 1) {
-                System.out.println("Poda alfa-beta ocorreu no max. Alpha = " + alpha + " Beta = " + beta);
-                break;
+            if (poda) {
+                if (alpha >= beta && i < nodo.filhos.size() - 1) {
+                    System.out.println("Poda alfa-beta ocorreu no max. Alpha = " + alpha + " Beta = " + beta);
+                    break;
+                }
             }
         }
+        System.out.println("Profundidade: " + profundidade + " Alpha: " + alpha);
         nodo.valor = valor;
         return valor;
     }
 
-    private static int min(Nodo nodo, int alpha, int beta) {
+    private static int min(Nodo nodo, int alpha, int beta, int profundidade, boolean inverter, boolean poda) {
         if (nodo.filhos.isEmpty()) {
+            System.out.println("Profundidade: " + profundidade + " Valor: " + nodo.valor);
             return nodo.valor;
         }
+
         int valor = Integer.MAX_VALUE;
-        if (DIREITA_PARA_ESQUERDA) {
+        if (inverter) {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta));
+            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta, profundidade, inverter, poda));
             beta = Math.min(beta, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito
-            if (alpha >= beta && i < nodo.filhos.size() - 1) {
-                System.out.println("Poda alfa-beta ocorreu no min. Alpha = " + alpha + " Beta = " + beta);
-                break;
+            if (poda) {
+                if (alpha >= beta && i < nodo.filhos.size() - 1) {
+                    System.out.println("Poda alfa-beta ocorreu no min. Alpha = " + alpha + " Beta = " + beta);
+                    break;
+                }
             }
         }
+        System.out.println("Profundidade: " + profundidade + " Beta: " + beta);
         nodo.valor = valor;
         return valor;
     }
 
-    private static void desenharArvore(Nodo raiz, String prefix) {
-        if (raiz == null) return;
-    
-        System.out.println(prefix + raiz.valor);
-        for (Nodo filho : raiz.filhos) {
-            desenharArvore(filho, prefix + "\t");
-        }
-    }
-    
-    public static void main(String[] args) {
+    private static Nodo criarArvore() {
         Nodo raiz = new Nodo(0);
 
         Nodo a = new Nodo(0);
@@ -140,12 +139,41 @@ public class Exercicio9 {
         n.filhos.add(ab);
         n.filhos.add(ac);
 
+        return raiz;
+    }
+
+    private static void desenharArvore(Nodo raiz, String prefix) {
+        if (raiz == null) return;
+    
+        System.out.println(prefix + raiz.valor);
+        for (Nodo filho : raiz.filhos) {
+            desenharArvore(filho, prefix + "\t");
+        }
+    }
+    
+    public static void main(String[] args) {
+        Nodo raiz = criarArvore();
+        
         System.out.println("Árvore de busca:");
         desenharArvore(raiz, "");
 
-        int resultado = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        System.out.println("Resultado: " + resultado);
-        desenharArvore(raiz, "");
+        raiz = criarArvore();
+
+        System.out.println("\nMin-max sem poda:");
+        int resultado0 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false, false);
+        System.out.println("Resultado: " + resultado0);
+
+        raiz = criarArvore();
+
+        System.out.println("\nMin-max com poda alfa-beta da esquerda para direita:");
+        int resultado1 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false, true);
+        System.out.println("Resultado: " + resultado1);
+
+        raiz = criarArvore();
+
+        System.out.println("\nMin-max com poda alfa-beta da direita para esquerda:");
+        int resultado2 = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, true, true);
+        System.out.println("Resultado: " + resultado2);
     }
 
 }

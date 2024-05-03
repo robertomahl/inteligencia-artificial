@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Exercicio9 {
 
+    public static final boolean DIREITA_PARA_ESQUERDA = false;
+
     static class Nodo {
         int valor;
         List<Nodo> filhos;
@@ -15,16 +17,16 @@ public class Exercicio9 {
         }
     }
 
-    private static int max(Nodo nodo, int alpha, int beta, boolean inverter) {
+    private static int max(Nodo nodo, int alpha, int beta) {
         if (nodo.filhos.isEmpty()) {
             return nodo.valor;
         }
         int valor = Integer.MIN_VALUE;
-        if (inverter) {
+        if (DIREITA_PARA_ESQUERDA) {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta, inverter));
+            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta));
             alpha = Math.max(alpha, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito
@@ -37,16 +39,16 @@ public class Exercicio9 {
         return valor;
     }
 
-    private static int min(Nodo nodo, int alpha, int beta, boolean inverter) {
+    private static int min(Nodo nodo, int alpha, int beta) {
         if (nodo.filhos.isEmpty()) {
             return nodo.valor;
         }
         int valor = Integer.MAX_VALUE;
-        if (inverter) {
+        if (DIREITA_PARA_ESQUERDA) {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta, inverter));
+            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta));
             beta = Math.min(beta, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito
@@ -139,9 +141,7 @@ public class Exercicio9 {
         n.filhos.add(ab);
         n.filhos.add(ac);
 
-        boolean direitaParaEsquerda = false;
-
-        int maxValue = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE, direitaParaEsquerda);
+        int maxValue = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE);
         System.out.println("Valor máximo: " + maxValue);
 
         desenharArvore(raiz, "");

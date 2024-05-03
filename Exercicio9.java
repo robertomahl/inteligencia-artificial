@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -141,9 +140,11 @@ public class Exercicio9 {
         n.filhos.add(ab);
         n.filhos.add(ac);
 
-        int maxValue = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        System.out.println("Valor máximo: " + maxValue);
+        System.out.println("Árvore de busca:");
+        desenharArvore(raiz, "");
 
+        int resultado = max(raiz, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        System.out.println("Resultado: " + resultado);
         desenharArvore(raiz, "");
     }
 

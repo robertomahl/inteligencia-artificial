@@ -25,7 +25,7 @@ public class Exercicio9 {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta, profundidade, inverter, poda));
+            valor = Math.max(valor, min(nodo.filhos.get(i), alpha, beta, profundidade + 1, inverter, poda));
             alpha = Math.max(alpha, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito
@@ -52,7 +52,7 @@ public class Exercicio9 {
             Collections.reverse(nodo.filhos);
         }
         for (int i = 0; i < nodo.filhos.size(); i++) {
-            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta, profundidade, inverter, poda));
+            valor = Math.min(valor, max(nodo.filhos.get(i), alpha, beta, profundidade + 1, inverter, poda));
             beta = Math.min(beta, valor);
             // A condição && i < nodo.filhos.size() - 1 é para evitar que contemos a última iteração como uma poda, 
             // já que o laço não seria executado de novo de qualquer jeito

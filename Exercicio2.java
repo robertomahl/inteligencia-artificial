@@ -58,13 +58,12 @@ public class Exercicio2 {
         while (!fronteira.isEmpty()) {
             List<Estado> caminho = fronteira.poll();
             Estado estadoAtual = caminho.get(caminho.size() - 1);
+            System.out.println("Visitando: " + estadoAtual);
             visitados.add(estadoAtual);
-
-            System.out.println(estadoAtual);
 
             if (estadoAtual.eObjetivo()) {
                 resultado.add(caminho);
-                System.out.println("");
+                System.out.println("Solução encontrada.");
                 continue;
             }
 

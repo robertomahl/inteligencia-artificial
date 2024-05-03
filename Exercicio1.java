@@ -3,7 +3,7 @@
  */
 import java.util.*;
 
-public class MissionariosCanibais {
+public class Exercicio1 {
 
     public static final int QUANT_MISS = 3, QUANT_CAN = 3;
 
@@ -21,8 +21,8 @@ public class MissionariosCanibais {
         }
 
         boolean eValido() {
-            if (this.missE < 0 || this.canE < 0 || this.missE > MissionariosCanibais.QUANT_MISS
-                    || this.canE > MissionariosCanibais.QUANT_CAN) {
+            if (this.missE < 0 || this.canE < 0 || this.missE > QUANT_MISS
+                    || this.canE > QUANT_CAN) {
                 return false;
             }
             if (this.missE < this.canE && this.missE != 0) {
@@ -31,8 +31,8 @@ public class MissionariosCanibais {
             if (this.missD < this.canD && this.missD != 0) {
                 return false;
             }
-            if (this.missE + this.canE + this.missD + this.canD != MissionariosCanibais.QUANT_MISS
-                    + MissionariosCanibais.QUANT_CAN) {
+            if (this.missE + this.canE + this.missD + this.canD != QUANT_MISS
+                    + QUANT_CAN) {
                 throw new IllegalStateException("Quantidade de missionários e canibais inválida.");
             }
             return true;
@@ -68,7 +68,7 @@ public class MissionariosCanibais {
     static Queue<List<Estado>> buscarSolucao() {
         Set<Estado> visitados = new HashSet<>();
 
-        Estado inicial = new Estado(MissionariosCanibais.QUANT_MISS, 0, MissionariosCanibais.QUANT_CAN, 0, true);
+        Estado inicial = new Estado(QUANT_MISS, 0, QUANT_CAN, 0, true);
         List<Estado> caminhoInicial = new ArrayList<>();
         caminhoInicial.add(inicial);
 
@@ -79,10 +79,12 @@ public class MissionariosCanibais {
         while (!fronteira.isEmpty()) {
             List<Estado> caminho = fronteira.poll();
             Estado estadoAtual = caminho.get(caminho.size() - 1);
+            System.out.println("Visitando: " + estadoAtual);
             visitados.add(estadoAtual);
 
             if (estadoAtual.eObjetivo()) {
                 resultado.add(caminho);
+                System.out.println("Solução encontrada.");
                 continue;
             }
 
@@ -132,9 +134,7 @@ public class MissionariosCanibais {
                 int nrEstado = 1;
                 for (Estado estado : caminho) {
                     String barco = estado.barcoNaEsquerda ? "Esquerda" : "Direita";
-                    System.out.println("Estado " + nrEstado + ": \tMissionários = " + estado.missE + "\tCanibais = "
-                            + estado.canE + "\t\tMissionários = " + estado.missD + "\tCanibais = " + estado.canD
-                            + "\tBarco = " + barco);
+                    System.out.println("Estado " + nrEstado + ":\t" + estado);
                     nrEstado++;
                 }
             }

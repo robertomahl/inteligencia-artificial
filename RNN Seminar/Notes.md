@@ -62,6 +62,18 @@
 - Por último, existe a abordagem encoder-decoder, em que é feita primeira a transição sequence-vector pelo encoder e depois a vector-sequence pelo decoder
     - Abordagem útil para traduções, especialmente porque as últimas palavras de uma sequência podem afetar as primeiras de uma tradução -- o que não seria considerado numa abordagem sequence-sequence
 
+### Forecasting a Time Series
+
+- Time-series: dados com valores em diferentes tempos, geralmente em intervalos regulares
+- Multivariate time series: time series com múltiplos valores em cada tempo
+- Univariate time series: time series com um único valor em cada tempo
+- A atividade mais comum com time-series é a *predição* do próximo valor, mas outras atividades também podem ser feitas:
+    - Imputação
+    - Classificação
+    - Detecção de anomalias
+- Naive forecasting: quando a predição do próximo valor é uma cópia de um valor do passado
+    - Produz resultado satisfatório quando a sazonalidade é muito forte
+
 
 ## Seminário
 

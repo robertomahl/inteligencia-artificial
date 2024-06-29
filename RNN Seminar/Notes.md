@@ -1,8 +1,10 @@
 # Redes Neurais Recorrentes
 
-## Vídeo
+## Vídeo 1 
 
-- Utilização em dados sequênciais
+https://www.youtube.com/watch?v=ZvBJxh5O3H0&pp=ygUZcmVkZXMgbmV1cmFpcyByZWNvcnJlbnRlcw%3D%3D
+
+- Utilização em dados sequênciais - palavras, imagens, sons
     - Temperatura ao longo do tempo
 - Prever a pŕoxima ação
     - Em vídeos, previsão de frame atual com base nos frames anteriores
@@ -21,9 +23,37 @@
 
 - Redes Neurais tradicionais não armazenam informação no tempo
 - Redes Neurais Recorrentes utilizam loops que permitem que a informação persista -- passa a informação à frente e manda para ele mesmo
-- Desenrrolar a rede neural -- recursão 
+- Desenrolar a rede neural -- recursão 
 - t número de neurônios
 - Múltiplas cópias de si mesmo -- implica em processamento mais demorado
+
+## Vídeo 2
+
+https://www.youtube.com/watch?v=elyOXSwL8xI
+
+Sequência: coleção de elementos que podem ser repetidos e cuja ordem importa.
+
+"Por que devemos nos importar com sequências?"
+
+- Tomam decisões baseadas não só na entrada atual, mas em entradas anteriores
+- Cada passo do desdobramento compartilha hiperparâmetros
+- Cada passo considera a saída do passo anterior. Como numa recorrência, todo passo acaba sendo função de todos os passos anteriores
+- Treinamento é feito através de backpropagation através do tempo
+    - [Imagem]
+    - Através do tempo implica na adição do somatório na fórmula, já que precisa calcular considerando todos os passos 
+- Exemplo de utilidade: análise de sentimento de uma frase/avaliação. A representação gerada pelo último passo serve como entrada para um classificador, que determinará qual a semântica da frase
+    - Problema: ao utilizar apenas a última informação, talvez possam ser perdidas informações anteriores.
+    - Vanishing gradient
+    - Solução: utilizar mais saídas além da última, de alguma maneira. Por exemplo, com soma ponderada
+- Exemplo de utilidade: codificação de pergunta para ser respondida. Dada essa codificação e algum contexto, os dois podem ser usados para gerar uma resposta
+- Exemplo de utilidade: reconhecimento de fala. 
+    - Sequence-to-sequence
+
+Vanishing gradient: quando se tem muitos passos é difícil propagar o erro ao treinar a rede
+- Gradientes mais distantes são muito menores que os de perto
+- Com essa diferença pode ser difícil de capturar dependências entre informações distantes na sequência
+- [Imagem]
+- LSTMs (Long Short-Term Memories) e GRUs (Gated Recurrent Networks)
 
 ## Livro
 
@@ -42,6 +72,7 @@
 - Ambos entrada e saída são vetores, ao passo que a saída era um escalar antes
 - Cada neurônio recorrente tem dois vetores de pesos, um para as entradas e outro para as saídas dos passos anteriores
 - ReLU ou hyperbolic tangent (tanh) como funções de ativação
+- [Imagem fórmula]
 
 ### Células de memória
 
@@ -62,6 +93,17 @@
 - Por último, existe a abordagem encoder-decoder, em que é feita primeira a transição sequence-vector pelo encoder e depois a vector-sequence pelo decoder
     - Abordagem útil para traduções, especialmente porque as últimas palavras de uma sequência podem afetar as primeiras de uma tradução -- o que não seria considerado numa abordagem sequence-sequence
 
+### Training RNNs
+
+O treinamento é realizado através de backpropagation through time sobre a rede neural já desenrolada. 
+1. Aplicação de função de cálculo de perda (loss function) considerando rótulos e previsões (erro quadrático, por exemplo)
+\* Em algumas RNNs, algumas saídas podem ser ignoradas. Por exemplo, em uma RNN sequence-to-vector apenas a última saída é considerada
+2. Os gradientes da perda são propagados de volta através da rede desenrolada
+3. Uma vez que a backword-phase foi completada e todos os gradientes foram computados, os parâmetros podem ser atualizados usando os gradientes acumulados
+\* [Imagem] onde 𝜂 é a taxa de aprendizado, um hiperparâmetro que controla o tamanho do passo de atualização
+
+Keras é uma biblioteca que toma conta dessa parte.
+
 ### Forecasting a Time Series
 
 - Time-series: dados com valores em diferentes tempos, geralmente em intervalos regulares
@@ -74,12 +116,14 @@
 - Naive forecasting: quando a predição do próximo valor é uma cópia de um valor do passado
     - Produz resultado satisfatório quando a sazonalidade é muito forte
 
+### Forecasting Using a Deep RNN
+
+Deep RNN: múltiplas camadas de células recorrentes
 
 ## Seminário
 
 - Bias geralmente começa com 0
-- Os pesos geralmente começam com valores pequenos e são ajustados durante o treinamento
-
+- Os pesos geralmente começam com valores pequenos aleatórios e são ajustados durante o treinamento
 
 #### Rede Neural Densa
 
@@ -96,3 +140,9 @@ Totalmente conectada ou feedforward, cada neurônio em uma camada está conectad
 
 Função de ativação?
 Rede neural densa?
+Então os pesos (de entrada, camadas ocultas e saída) são por número de unidades recorrentes? Não são pelo número de elementos na entrada porque isso faria que dependesse do tamanho da sequência, e isso foi negado diversas vezes
+
+## Problemas
+
+- Tempo de processamento é maior devido ao unfolding
+- BPTT causa vanishing gradient ou explosion gradient

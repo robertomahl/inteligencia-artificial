@@ -1,29 +1,48 @@
-# h(inicial) = 0
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import SimpleRNN, Dense
 
-# 1. x(0) e h(inicial) são passados para o neurônio
-# 2. a soma ponderada é calculada e adicionada ao bias
-# 3. a função de ativação é aplicada ao resultado -- tanh por padrão (hyperbolic tangent)
-# 4. o resultado é y(0) e h(0)
-# 5. h(0) é passado para a próxima iteração junto a x(1)s
 
-# Por padrão, camadas recorrentes no Keras só retornam o estado final da sequência
-# Para retornar uma saída por frame, deve-se configurar com return_sequences=True
+text = "This is GeeksforGeeks a software training institute"
+chars = sorted(list(set(text)))
+char_to_index = {char: i for i, char in enumerate(chars)}
+index_to_char = {i: char for i, char in enumerate(chars)}
 
-# sequence-to-vector. Como há um único neurônio, a saída é um vetor de dimensão 1
+seq_length = 3
+sequences = []
+labels = []
 
-model = tf.keras.Sequential([
-    # [batch size, time steps, dimensionality]
-    # batch size: 
-    # time steps: None = any number of time steps
-    # dimensionality: 1 = univariate time series
-    tf.keras.layers.SimpleRNN(32, input_shape=[None, 1])
-    tf.keras.layers.Dense(1) # no activation function by default
-])
+for i in range(len(text) - seq_length):
+    seq = text[i:i+seq_length]
+    label = text[i+seq_length]
+    sequences.append([char_to_index[char] for char in seq])
+    labels.append(char_to_index[label])
 
-deep_model = tf.keras.Sequential([
-    tf.keras.layers.SimpleRNN(32, return_sequences=True, input_shape=[None, 1]),
-    tf.keras.layers.SimpleRNN(32, return_sequences=True),
-    tf.keras.layers.SimpleRNN(32),
-    tf.keras.layers.Dense(1)
-])
+X = np.array(sequences)
+y = np.array(labels)
 
+X_one_hot = tf.one_hot(X, len(chars))
+y_one_hot = tf.one_hot(y, len(chars))
+
+model = Sequential()
+model.add(SimpleRNN(50, input_shape=(seq_length, len(chars)), activation='relu'))
+model.add(Dense(len(chars), activation='softmax'))
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.fit(X_one_hot, y_one_hot, epochs=100)
+
+start_seq = "This is G"
+generated_text = start_seq
+
+for i in range(50):
+    x = np.array([[char_to_index[char] for char in generated_text[-seq_length:]]])
+    x_one_hot = tf.one_hot(x, len(chars))
+    prediction = model.predict(x_one_hot)
+    next_index = np.argmax(prediction)
+    next_char = index_to_char[next_index]
+    generated_text += next_char
+
+print("Generated Text:")
+print(generated_text)

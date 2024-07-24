@@ -141,8 +141,9 @@ Totalmente conectada ou feedforward, cada neurônio em uma camada está conectad
 Função de ativação?
 Rede neural densa?
 Então os pesos (de entrada, camadas ocultas e saída) são por número de unidades recorrentes? Não são pelo número de elementos na entrada porque isso faria que dependesse do tamanho da sequência, e isso foi negado diversas vezes
+Dropout para tratar overfitting
 
 ## Problemas
 
 - Tempo de processamento é maior devido ao unfolding
-- BPTT causa vanishing gradient ou explosion gradient
+- BPTT causa vanishing gradient ou explosion gradient (unstable gradient)
